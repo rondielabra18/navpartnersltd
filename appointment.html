@@ -30,13 +30,7 @@
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: Clinic
-  * Template URL: https://bootstrapmade.com/clinic-bootstrap-template/
-  * Updated: Jul 23 2025 with Bootstrap v5.3.7
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+  
 </head>
 
 <body class="appointment-page">
@@ -182,7 +176,17 @@
               </div>
 
               <div class="appointment-form" data-aos="fade-up" data-aos-delay="400">
-                <form action="forms/book-appointment.php" method="post" class="php-email-form">
+                <form action="https://formsubmit.co/e585131c1e3ac44b56208a752b6ae43a" method="POST">
+
+                  <!--Honeypot-->
+                  <input type="text" name="_honey" style="display: none">
+
+                   <!--Disable Captch-->
+                   <input type="hidden" name="_captcha" value="false">
+
+                   <!--Success Email Page-->
+                   <input type="hidden" name="_next" value="https://rondielabra18.github.io/navpartnersltd/success.html">
+
                   <div class="row gy-4">
                     <div class="col-md-6">
                       <input type="text" name="name" class="form-control" placeholder="Full Name" required="">
