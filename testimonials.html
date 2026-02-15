@@ -83,15 +83,77 @@
                 <!-- <li><a href="404.html">404</a></li> -->
               </ul>
             </li>
-             <li class="dropdown"><a href="#"><span>Language</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+             <!-- <li class="dropdown"><a href="#"><span>Language</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
               <ul>
                 <li><a href="#">Japanese</a></li>
                 <li><a href="#">English</a></li>
                 <li><a href="#">Vietnam</a></li>
                 <li><a href="#">Myanmar</a></li>
               </ul>
-            </li>
+            </li> -->
             <li><a href="contact.html">Contact</a></li>
+            <li>
+              <!--Language Translator-->
+         <div class="gtranslate_wrapper"></div>
+<script>
+  window.gtranslateSettings = {
+    "default_language": "en",
+    "native_language_names": true,
+    "detect_browser_language": false, 
+    "languages": ["en", "ja", "my", "vi"],
+    "wrapper_selector": ".gtranslate_wrapper",
+    "select_language_label": "Select Language"
+  }
+</script>
+<script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
+
+
+<script>
+(function() {
+    const STORAGE_KEY = 'userLanguage';
+
+    function applySavedLanguage() {
+        const savedLang = localStorage.getItem(STORAGE_KEY);
+        const select = document.querySelector('.gt_selector');
+        
+        // If we have a saved lang (and it's not the default English)
+        if (savedLang && savedLang !== 'en' && select) {
+            if (select.value !== savedLang) {
+                // Set the value
+                select.value = savedLang;
+                
+                // Trigger the logic
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                if (typeof doGTranslate === 'function') {
+                    doGTranslate('en|' + savedLang);
+                }
+                console.log("GitHub Pages: Auto-translated to " + savedLang);
+            }
+        }
+    }
+
+    // Capture manual changes to save them for the next page
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.classList.contains('gt_selector')) {
+            localStorage.setItem(STORAGE_KEY, e.target.value);
+        }
+    });
+
+    // Check for the widget every 300ms for up to 5 seconds
+    let count = 0;
+    const interval = setInterval(() => {
+        const select = document.querySelector('.gt_selector');
+        if (select) {
+            applySavedLanguage();
+            // We don't clear the interval yet because GTranslate 
+            // sometimes resets itself 1 second after loading.
+        }
+        if (count++ > 20) clearInterval(interval);
+    }, 300);
+})();
+</script>
+
+            </li>
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
