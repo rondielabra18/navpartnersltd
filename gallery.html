@@ -93,59 +93,62 @@
             </li> -->
             <li><a href="contact.html">Contact</a></li>
             <li>
-              <!--Translator-->
-              <div class="gtranslate_wrapper"></div>
+              <!--Language Translator-->
+         <div class="gtranslate_wrapper"></div>
 <script>
   window.gtranslateSettings = {
     "default_language": "en",
     "native_language_names": true,
-    "detect_browser_language": false,
+    "detect_browser_language": false, 
     "languages": ["en", "ja", "my", "vi"],
     "wrapper_selector": ".gtranslate_wrapper",
-    "flag_size": 24,
-    "flag_style": "2d", /* Options: '2d', '3d' */
-    "alt_flags": {"en": "usa"} /* Optional: changes UK flag to USA if preferred */
+    "select_language_label": "Select Language"
   }
 </script>
-<script src="https://cdn.gtranslate.net/widgets/latest/dwf.js" defer></script>
+<script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
+
 
 <script>
 (function() {
     const STORAGE_KEY = 'userLanguage';
 
-    // 1. SAVE: Since the flag widget uses custom links, we listen for clicks
-    document.addEventListener('click', function(e) {
-        // Look for the language link inside the GTranslate widget
-        const langLink = e.target.closest('a[data-gt-lang]');
-        if (langLink) {
-            const lang = langLink.getAttribute('data-gt-lang');
-            localStorage.setItem(STORAGE_KEY, lang);
-            console.log("Flag selected and saved:", lang);
+    function applySavedLanguage() {
+        const savedLang = localStorage.getItem(STORAGE_KEY);
+        const select = document.querySelector('.gt_selector');
+        
+        // If we have a saved lang (and it's not the default English)
+        if (savedLang && savedLang !== 'en' && select) {
+            if (select.value !== savedLang) {
+                // Set the value
+                select.value = savedLang;
+                
+                // Trigger the logic
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                if (typeof doGTranslate === 'function') {
+                    doGTranslate('en|' + savedLang);
+                }
+                console.log("GitHub Pages: Auto-translated to " + savedLang);
+            }
+        }
+    }
+
+    // Capture manual changes to save them for the next page
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.classList.contains('gt_selector')) {
+            localStorage.setItem(STORAGE_KEY, e.target.value);
         }
     });
 
-    // 2. APPLY: Force the flag widget to trigger
-    function applyFlagLanguage() {
-        const savedLang = localStorage.getItem(STORAGE_KEY);
-        if (!savedLang || savedLang === 'en') return;
-
-        // Check if the GTranslate internal function is ready
-        if (typeof doGTranslate === 'function') {
-            doGTranslate('en|' + savedLang);
-            console.log("Sticky Flag: Language applied via GitHub Pages");
-            return true;
+    // Check for the widget every 300ms for up to 5 seconds
+    let count = 0;
+    const interval = setInterval(() => {
+        const select = document.querySelector('.gt_selector');
+        if (select) {
+            applySavedLanguage();
+            // We don't clear the interval yet because GTranslate 
+            // sometimes resets itself 1 second after loading.
         }
-        return false;
-    }
-
-    // 3. THE WATCHER: Poll for the engine to load
-    let attempts = 0;
-    const watcher = setInterval(() => {
-        if (applyFlagLanguage()) {
-            attempts++;
-        }
-        // Stop after 5 seconds
-        if (attempts > 20) clearInterval(watcher);
+        if (count++ > 20) clearInterval(interval);
     }, 300);
 })();
 </script>
