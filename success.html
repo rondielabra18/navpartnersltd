@@ -66,33 +66,38 @@
         <nav id="navmenu" class="navmenu">
           <ul>
             <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <!-- <li><a href="departments.html">Departments</a></li> -->
-            <li><a href="services.html">Services</a></li>
-            <!-- <li><a href="doctors.html">Doctors</a></li> -->
-            <li class="dropdown"><a href="#"><span>More Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+  
+              <li><a href="about.html">About Us</a></li>
+  
+              <li><a href="departments.html">
+                    <span style="display:none;">Employment Registration</span>Job Application
+                  </a></li>
+  
+              <li><a href="services.html">Services</a></li>
+  
+              <li class="dropdown"><a href="#"><span>More Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <!-- <li><a href="department-details.html">Department Details</a></li> -->
-              <!-- <li><a href="service-details.html">Service Details</a></li> -->
-              <li><a href="appointment.html">Appointment</a></li>
-              <li><a href="testimonials.html">Testimonials</a></li>
+              <li><a href="appointment.html">
+                    <span style="display:none;">Schedule a Consultation</span>Appointment
+                  </a></li>
+      
               <li><a href="faq.html">Frequently Asked Questions</a></li>
+      
               <li><a href="gallery.html">Gallery</a></li>
-              <li><a href="terms.html">Terms</a></li>
-              <li><a href="privacy.html">Privacy</a></li>
-              <li><a href="404.html">404</a></li>
-            </ul>
-            </li>
-            <!-- <li class="dropdown"><a href="#"><span>Language</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-              <ul>
-                <li><a href="#">Japanese</a></li>
-                <li><a href="#">English</a></li>
-                <li><a href="#">Vietnam</a></li>
-                <li><a href="#">Myanmar</a></li>
+      
+              <li><a href="terms.html">
+                    <span style="display:none;">Terms and Conditions</span>Terms
+                  </a></li>
+      
+              <li><a href="privacy.html">
+                    <span style="display:none;">Data Privacy Policy</span>Privacy
+                  </a></li>
               </ul>
-            </li> -->
-            <li><a href="contact.html">Contact</a></li>
-            <li>
+              </li>
+  
+              <li><a href="contact.html">Contact Us</a></li>
+          <!-- </ul>
+             <li> -->
               <!--Language Translator-->
          <div class="gtranslate_wrapper"></div>
 <script>
@@ -100,7 +105,7 @@
     "default_language": "en",
     "native_language_names": true,
     "detect_browser_language": false, 
-    "languages": ["en", "ja", "my", "vi"],
+    "languages": ["en", "ja", "my", "vi", "id"],
     "wrapper_selector": ".gtranslate_wrapper",
     "select_language_label": "Select Language"
   }
@@ -114,42 +119,39 @@
 
     function applySavedLanguage() {
         const savedLang = localStorage.getItem(STORAGE_KEY);
+        // Ensure we don't loop if already in English
+        if (!savedLang || savedLang === 'en') return;
+
         const select = document.querySelector('.gt_selector');
         
-        // If we have a saved lang (and it's not the default English)
-        if (savedLang && savedLang !== 'en' && select) {
+        if (select && typeof doGTranslate === 'function') {
             if (select.value !== savedLang) {
-                // Set the value
+                // Professional approach: change the value and trigger the global function
                 select.value = savedLang;
-                
-                // Trigger the logic
-                select.dispatchEvent(new Event('change', { bubbles: true }));
-                if (typeof doGTranslate === 'function') {
-                    doGTranslate('en|' + savedLang);
-                }
-                console.log("GitHub Pages: Auto-translated to " + savedLang);
+                doGTranslate('en|' + savedLang);
+                console.log("Context updated to: " + savedLang);
             }
         }
     }
 
-    // Capture manual changes to save them for the next page
+    // Capture user selection
     document.addEventListener('change', function(e) {
         if (e.target && e.target.classList.contains('gt_selector')) {
-            localStorage.setItem(STORAGE_KEY, e.target.value);
+            const selectedLang = e.target.value.split('|')[1] || e.target.value;
+            localStorage.setItem(STORAGE_KEY, selectedLang);
         }
     });
 
-    // Check for the widget every 300ms for up to 5 seconds
-    let count = 0;
-    const interval = setInterval(() => {
+    // Check for initialization with a cleaner exit
+    let attempts = 0;
+    const checkWidget = setInterval(() => {
         const select = document.querySelector('.gt_selector');
-        if (select) {
+        if (select && typeof doGTranslate === 'function') {
             applySavedLanguage();
-            // We don't clear the interval yet because GTranslate 
-            // sometimes resets itself 1 second after loading.
+            clearInterval(checkWidget); // Stop once found and applied
         }
-        if (count++ > 20) clearInterval(interval);
-    }, 300);
+        if (attempts++ > 30) clearInterval(checkWidget);
+    }, 200);
 })();
 </script>
 
