@@ -757,33 +757,49 @@
 
 
   <script>
-  const translationMap = {
-    '工業メーカー': '製造業',
-    '介護': '介護事業', // Fixes Nursing Care mistranslation
-    '農学者': '農業家'     // Fixes Agriculturist mistranslation
-  };
+ const translationMap = {
+  '工業メーカー': '製造業',
+  '介護': '介護事業', 
+  '農学者': '農業家' 
+};
 
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      if (mutation.type === 'characterData' || mutation.type === 'childList') {
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-        let node;
-        while(node = walker.nextNode()) {
-          for (const [wrong, right] of Object.entries(translationMap)) {
-            if (node.nodeValue.includes(wrong)) {
-              node.nodeValue = node.nodeValue.replace(wrong, right);
-            }
-          }
-        }
+const observer = new MutationObserver((mutations) => {
+  // Disconnect to prevent the loop while we make changes
+  observer.disconnect();
+
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+  let node;
+
+  while(node = walker.nextNode()) {
+    let text = node.nodeValue;
+    let changed = false;
+
+    for (const [wrong, right] of Object.entries(translationMap)) {
+      // Logic: Only replace if the text contains 'wrong' AND does NOT already contain 'right'
+      if (text.includes(wrong) && !text.includes(right)) {
+        text = text.replace(new RegExp(wrong, 'g'), right);
+        changed = true;
       }
-    });
-  });
+    }
 
+    if (changed) {
+      node.nodeValue = text;
+    }
+  }
+
+  // Reconnect after finishing the updates
+  startObserving();
+});
+
+function startObserving() {
   observer.observe(document.body, {
     childList: true,
     subtree: true,
     characterData: true
   });
+}
+
+startObserving();
 </script>
 
 </body>
